@@ -1,9 +1,9 @@
 
+import os
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
-import json
 
 app = Flask(__name__)
 
@@ -68,14 +68,18 @@ def handle_message(event):
 
     elif text == '!startread':
         read_tracking[group_id] = set()
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='เริ่มจับคนอ่านแล้ว'))
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='เริ่มจับคนอ่านแล้ว (ให้พิมพ์ !read)'))
+
+    elif text == '!read':
+        if group_id in read_tracking:
+            read_tracking[group_id].add(user_id)
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='รับทราบการอ่านข้อความ'))
 
     elif text == '!whoread':
         if group_id in read_tracking:
             readers = [get_user_name(uid, group_id) for uid in read_tracking[group_id]]
             msg = '\n'.join(readers) if readers else 'ยังไม่มีใครอ่านข้อความ'
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='คนที่อ่านแล้ว:\n' + msg))
-
 
 @handler.add(UnsendEvent)
 def handle_unsend(event):
@@ -106,4 +110,5 @@ def get_user_name(user_id, group_id):
         return user_id
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
