@@ -88,7 +88,7 @@ def handle_unsend(event):
         if group_id:
             line_bot_api.push_message(group_id, TextSendMessage(text=f'{name} ลบข้อความ: {text}'))
 
-@handler.add(MemberLeaveEvent)
+@handler.add(MemberLeftEvent)
 def handle_kick(event):
     group_id = getattr(event.source, 'group_id', None)
     kicked = event.left.members[0].user_id if event.left.members else None
