@@ -68,18 +68,14 @@ def handle_message(event):
 
     elif text == '!startread':
         read_tracking[group_id] = set()
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='เริ่มจับคนอ่านแล้ว (ให้พิมพ์ !read)'))
-
-    elif text == '!read':
-        if group_id in read_tracking:
-            read_tracking[group_id].add(user_id)
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='รับทราบการอ่านข้อความ'))
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='เริ่มจับคนอ่านแล้ว'))
 
     elif text == '!whoread':
         if group_id in read_tracking:
             readers = [get_user_name(uid, group_id) for uid in read_tracking[group_id]]
             msg = '\n'.join(readers) if readers else 'ยังไม่มีใครอ่านข้อความ'
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='คนที่อ่านแล้ว:\n' + msg))
+
 
 @handler.add(UnsendEvent)
 def handle_unsend(event):
